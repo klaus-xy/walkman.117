@@ -52,9 +52,9 @@ const tracks: Track[] = [
   },
   {
     id: "t5",
-    title: "Paper Moon",
-    artist: "Kite Season",
-    src: "/audio/track-4.mp3",
+    title: "Okunkun",
+    artist: "Solana ft Killertunes",
+    src: "/audio/Solana_ft_Killertunes-Okunkun.mp3",
   },
   // {
   //   id: "t6",
