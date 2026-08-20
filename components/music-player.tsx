@@ -46,9 +46,9 @@ const tracks: Track[] = [
   },
   {
     id: "t4",
-    title: "Low Tide",
-    artist: "Marigold",
-    src: "/audio/track-3.mp3",
+    title: "Prairies",
+    artist: "BoyWithUke",
+    src: "/audio/Boywithuke-Prairies.mp3",
   },
   {
     id: "t5",
