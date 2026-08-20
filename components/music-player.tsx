@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { AudioVisualizer } from "@/components/audio-visualizer"
 import {
   Drawer,
   DrawerContent,
@@ -314,7 +315,7 @@ export function MusicPlayer() {
 
           <div className="neo-inset flex items-center gap-4 rounded-2xl p-5">
             <Reel spinning={isPlaying} />
-            <div className="neo-inset-sm h-3 flex-1 rounded-full" />
+            <AudioVisualizer audioRef={audioRef} isPlaying={isPlaying} />
             <Reel spinning={isPlaying} />
           </div>
 
