@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import {
+  ListMusic,
   Pause,
   Play,
   Repeat,
@@ -15,6 +16,14 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
 import { Slider } from "@/components/ui/slider"
 
 type Track = {
@@ -56,12 +65,18 @@ const tracks: Track[] = [
     artist: "Solana ft Killertunes",
     src: "/audio/Solana_ft_Killertunes-Okunkun.mp3",
   },
-  // {
-  //   id: "t6",
-  //   title: "Analog Sky",
-  //   artist: "Marigold",
-  //   src: "/audio/track-5.mp3",
-  // },
+  {
+    id: "t6",
+    title: "U Made A Smart Girl Dumb!!",
+    artist: "panicbaby",
+    src: "/audio/Panicbaby-U Made A Smart Girl Dumb!!.mp3",
+  },
+  {
+    id: "t7",
+    title: "Self Aware",
+    artist: "Temper City",
+    src: "/audio/Temper_City-Self_Aware.mp3",
+  },
 ]
 
 type RepeatMode = "off" | "all" | "one"
@@ -260,192 +275,211 @@ export function MusicPlayer() {
     muted || volume === 0 ? VolumeX : volume < 0.5 ? Volume1 : Volume2
 
   return (
-    <div className="grid w-full max-w-3xl gap-6 md:grid-cols-2 md:items-start">
-      <audio
-        ref={audioRef}
-        src={currentTrack.src}
-        muted={muted}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
-        onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
-        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
-        onError={() => setHasError(true)}
-        onEnded={handleEnded}
-      />
+    <Drawer showSwipeHandle>
+      <div className="w-full max-w-md">
+        <audio
+          ref={audioRef}
+          src={currentTrack.src}
+          muted={muted}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+          onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+          onError={() => setHasError(true)}
+          onEnded={handleEnded}
+        />
 
-      <section className="neo-raised-lg flex flex-col gap-6 rounded-[2rem] p-6 sm:p-8">
-        <div className="flex items-center justify-between">
-          <span className="font-mono text-xs tracking-[0.3em] text-muted-foreground">
-            WALKMAN // 117
-          </span>
-          <span className="font-mono text-[10px] tracking-widest text-muted-foreground/70">
-            {shuffle ? "SHUF " : ""}
-            {repeatMode !== "off"
-              ? repeatMode === "one"
-                ? "RPT-1"
-                : "RPT-ALL"
-              : ""}
-          </span>
-        </div>
+        <section className="neo-raised-lg flex flex-col gap-6 rounded-[2rem] p-6 sm:p-8">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-xs tracking-[0.3em] text-muted-foreground">
+              WALKMAN // 117
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[10px] tracking-widest text-muted-foreground/70">
+                {shuffle ? "SHUF " : ""}
+                {repeatMode !== "off"
+                  ? repeatMode === "one"
+                    ? "RPT-1"
+                    : "RPT-ALL"
+                  : ""}
+              </span>
+              <DrawerTrigger
+                aria-label="Open playlist"
+                className="neo-raised-sm flex size-8 shrink-0 items-center justify-center rounded-full text-foreground transition-all outline-none focus-visible:ring-3 focus-visible:ring-ring/50 active:translate-y-px"
+              >
+                <ListMusic className="size-4" />
+              </DrawerTrigger>
+            </div>
+          </div>
 
-        <div className="neo-inset flex items-center gap-4 rounded-2xl p-5">
-          <Reel spinning={isPlaying} />
-          <div className="neo-inset-sm h-3 flex-1 rounded-full" />
-          <Reel spinning={isPlaying} />
-        </div>
+          <div className="neo-inset flex items-center gap-4 rounded-2xl p-5">
+            <Reel spinning={isPlaying} />
+            <div className="neo-inset-sm h-3 flex-1 rounded-full" />
+            <Reel spinning={isPlaying} />
+          </div>
 
-        <div className="text-center">
-          <p className="truncate text-lg font-semibold">{currentTrack.title}</p>
-          <p className="truncate text-sm text-muted-foreground">
-            {currentTrack.artist}
-          </p>
-          {hasError ? (
-            <p className="mt-1 text-xs text-muted-foreground/70">
-              Audio file not found — add it to /public/audio
+          <div className="text-center">
+            <p className="truncate text-lg font-semibold">
+              {currentTrack.title}
             </p>
-          ) : null}
-        </div>
+            <p className="truncate text-sm text-muted-foreground">
+              {currentTrack.artist}
+            </p>
+            {hasError ? (
+              <p className="mt-1 text-xs text-muted-foreground/70">
+                Audio file not found — add it to /public/audio
+              </p>
+            ) : null}
+          </div>
 
-        <div className="flex items-center gap-3">
-          <span
-            className="w-10 shrink-0 font-mono text-xs tabular-nums"
-            style={{ color: "var(--neo-led)" }}
-          >
-            {formatTime(currentTime)}
-          </span>
-          <Slider
-            value={currentTime}
-            min={0}
-            max={duration > 0 ? duration : 1}
-            step={0.1}
-            disabled={!duration}
-            onValueChange={(next) => {
-              if (audioRef.current) audioRef.current.currentTime = next
-              setCurrentTime(next)
-            }}
-          />
-          <span className="w-10 shrink-0 text-right font-mono text-xs text-muted-foreground tabular-nums">
-            {formatTime(duration)}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-center gap-3 sm:gap-4">
-          <DeckButton
-            active={shuffle}
-            aria-label="Toggle shuffle"
-            aria-pressed={shuffle}
-            onClick={() => setShuffle((s) => !s)}
-          >
-            <Shuffle className="size-4" />
-          </DeckButton>
-          <DeckButton aria-label="Previous track" onClick={goPrev}>
-            <SkipBack className="size-4" />
-          </DeckButton>
-          <DeckButton
-            large
-            active={isPlaying}
-            aria-label={isPlaying ? "Pause" : "Play"}
-            onClick={togglePlay}
-          >
-            {isPlaying ? (
-              <Pause className="size-6" />
-            ) : (
-              <Play className="ml-0.5 size-6" />
-            )}
-          </DeckButton>
-          <DeckButton aria-label="Next track" onClick={goNext}>
-            <SkipForward className="size-4" />
-          </DeckButton>
-          <DeckButton
-            active={repeatMode !== "off"}
-            aria-label="Cycle repeat mode"
-            aria-pressed={repeatMode !== "off"}
-            onClick={cycleRepeat}
-          >
-            <RepeatIcon className="size-4" />
-          </DeckButton>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <DeckButton
-            aria-label={muted ? "Unmute" : "Mute"}
-            aria-pressed={muted}
-            active={muted}
-            onClick={() => setMuted((m) => !m)}
-            className="size-9"
-          >
-            <VolumeIcon className="size-4" />
-          </DeckButton>
-          <Slider
-            value={muted ? 0 : Math.round(volume * 100)}
-            min={0}
-            max={100}
-            step={1}
-            onValueChange={(next) => {
-              setVolume(next / 100)
-              if (next > 0) setMuted(false)
-            }}
-          />
-        </div>
-      </section>
-
-      <section className="neo-raised-lg flex max-h-[420px] flex-col gap-1 overflow-y-auto rounded-[2rem] p-4 sm:p-6">
-        <span className="mb-2 font-mono text-xs tracking-[0.3em] text-muted-foreground">
-          PLAYLIST // 00
-        </span>
-        {tracks.map((track, index) => {
-          const active = index === currentIndex
-          const trackDuration = durations[track.id]
-          return (
-            <button
-              key={track.id}
-              type="button"
-              onClick={() => playTrack(index)}
-              className={cn(
-                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all outline-none",
-                "focus-visible:ring-3 focus-visible:ring-ring/50",
-                active ? "neo-inset" : "hover:neo-raised-sm"
-              )}
+          <div className="flex items-center gap-3">
+            <span
+              className="w-10 shrink-0 font-mono text-xs tabular-nums"
+              style={{ color: "var(--neo-led)" }}
             >
-              <span className="flex w-4 shrink-0 items-center justify-center">
-                {active && isPlaying ? (
-                  <NowPlayingBars />
-                ) : (
+              {formatTime(currentTime)}
+            </span>
+            <Slider
+              value={currentTime}
+              min={0}
+              max={duration > 0 ? duration : 1}
+              step={0.1}
+              disabled={!duration}
+              onValueChange={(next) => {
+                if (audioRef.current) audioRef.current.currentTime = next
+                setCurrentTime(next)
+              }}
+            />
+            <span className="w-10 shrink-0 text-right font-mono text-xs text-muted-foreground tabular-nums">
+              {formatTime(duration)}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-center gap-3 sm:gap-4">
+            <DeckButton
+              active={shuffle}
+              aria-label="Toggle shuffle"
+              aria-pressed={shuffle}
+              onClick={() => setShuffle((s) => !s)}
+            >
+              <Shuffle className="size-4" />
+            </DeckButton>
+            <DeckButton aria-label="Previous track" onClick={goPrev}>
+              <SkipBack className="size-4" />
+            </DeckButton>
+            <DeckButton
+              large
+              active={isPlaying}
+              aria-label={isPlaying ? "Pause" : "Play"}
+              onClick={togglePlay}
+            >
+              {isPlaying ? (
+                <Pause className="size-6" />
+              ) : (
+                <Play className="ml-0.5 size-6" />
+              )}
+            </DeckButton>
+            <DeckButton aria-label="Next track" onClick={goNext}>
+              <SkipForward className="size-4" />
+            </DeckButton>
+            <DeckButton
+              active={repeatMode !== "off"}
+              aria-label="Cycle repeat mode"
+              aria-pressed={repeatMode !== "off"}
+              onClick={cycleRepeat}
+            >
+              <RepeatIcon className="size-4" />
+            </DeckButton>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <DeckButton
+              aria-label={muted ? "Unmute" : "Mute"}
+              aria-pressed={muted}
+              active={muted}
+              onClick={() => setMuted((m) => !m)}
+              className="size-9"
+            >
+              <VolumeIcon className="size-4" />
+            </DeckButton>
+            <Slider
+              value={muted ? 0 : Math.round(volume * 100)}
+              min={0}
+              max={100}
+              step={1}
+              onValueChange={(next) => {
+                setVolume(next / 100)
+                if (next > 0) setMuted(false)
+              }}
+            />
+          </div>
+        </section>
+      </div>
+
+      <DrawerContent className="neo-raised-lg rounded-t-[2rem] bg-background">
+        <DrawerHeader>
+          <DrawerTitle className="font-mono text-xs tracking-[0.3em] text-muted-foreground">
+            PLAYLIST // 00
+          </DrawerTitle>
+          <DrawerDescription>
+            {tracks.length} track{tracks.length === 1 ? "" : "s"}
+          </DrawerDescription>
+        </DrawerHeader>
+        <div className="flex flex-col gap-1 overflow-y-auto p-4 pt-2">
+          {tracks.map((track, index) => {
+            const active = index === currentIndex
+            const trackDuration = durations[track.id]
+            return (
+              <button
+                key={track.id}
+                type="button"
+                onClick={() => playTrack(index)}
+                className={cn(
+                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all outline-none",
+                  "focus-visible:ring-3 focus-visible:ring-ring/50",
+                  active ? "neo-inset" : "hover:neo-raised-sm"
+                )}
+              >
+                <span className="flex w-4 shrink-0 items-center justify-center">
+                  {active && isPlaying ? (
+                    <NowPlayingBars />
+                  ) : (
+                    <span
+                      className={cn(
+                        "font-mono text-xs",
+                        active ? "" : "text-muted-foreground/70"
+                      )}
+                      style={active ? { color: "var(--neo-led)" } : undefined}
+                    >
+                      {index + 1}
+                    </span>
+                  )}
+                </span>
+                <span className="min-w-0 flex-1">
                   <span
                     className={cn(
-                      "font-mono text-xs",
-                      active ? "" : "text-muted-foreground/70"
+                      "block truncate text-sm font-medium",
+                      active && "text-primary"
                     )}
-                    style={active ? { color: "var(--neo-led)" } : undefined}
                   >
-                    {index + 1}
+                    {track.title}
                   </span>
-                )}
-              </span>
-              <span className="min-w-0 flex-1">
-                <span
-                  className={cn(
-                    "block truncate text-sm font-medium",
-                    active && "text-primary"
-                  )}
-                >
-                  {track.title}
+                  <span className="block truncate text-xs text-muted-foreground">
+                    {track.artist}
+                  </span>
                 </span>
-                <span className="block truncate text-xs text-muted-foreground">
-                  {track.artist}
-                </span>
-              </span>
-              <span className="shrink-0 font-mono text-xs text-muted-foreground tabular-nums">
-                {trackDuration === undefined
-                  ? "--:--"
-                  : trackDuration === null
+                <span className="shrink-0 font-mono text-xs text-muted-foreground tabular-nums">
+                  {trackDuration === undefined
                     ? "--:--"
-                    : formatTime(trackDuration)}
-              </span>
-            </button>
-          )
-        })}
-      </section>
-    </div>
+                    : trackDuration === null
+                      ? "--:--"
+                      : formatTime(trackDuration)}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      </DrawerContent>
+    </Drawer>
   )
 }
