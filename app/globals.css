@@ -48,7 +48,7 @@
 }
 
 :root {
-    --background: oklch(1 0 0);
+    --background: oklch(0.93 0.004 260);
     --foreground: oklch(0.145 0 0);
     --card: oklch(1 0 0);
     --card-foreground: oklch(0.145 0 0);
@@ -80,10 +80,15 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+
+    --neo-light: oklch(1 0 0);
+    --neo-dark: oklch(0.74 0.008 260);
+    --neo-led: oklch(0.62 0.13 55);
+    --neo-led-dim: oklch(0.74 0.02 260);
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
+    --background: oklch(0.24 0.006 260);
     --foreground: oklch(0.985 0 0);
     --card: oklch(0.205 0 0);
     --card-foreground: oklch(0.985 0 0);
@@ -114,6 +119,11 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+
+    --neo-light: oklch(0.33 0.006 260);
+    --neo-dark: oklch(0.13 0.006 260);
+    --neo-led: oklch(0.72 0.14 55);
+    --neo-led-dim: oklch(0.34 0.01 260);
 }
 
 @layer base {
@@ -126,4 +136,53 @@
   html {
     @apply font-sans;
     }
+}
+
+@layer components {
+  .neo-raised-sm {
+    box-shadow:
+      3px 3px 6px var(--neo-dark),
+      -3px -3px 6px var(--neo-light);
+  }
+  .neo-raised {
+    box-shadow:
+      6px 6px 12px var(--neo-dark),
+      -6px -6px 12px var(--neo-light);
+  }
+  .neo-raised-lg {
+    box-shadow:
+      10px 10px 20px var(--neo-dark),
+      -10px -10px 20px var(--neo-light);
+  }
+  .neo-inset-sm {
+    box-shadow:
+      inset 2px 2px 5px var(--neo-dark),
+      inset -2px -2px 5px var(--neo-light);
+  }
+  .neo-inset {
+    box-shadow:
+      inset 4px 4px 8px var(--neo-dark),
+      inset -4px -4px 8px var(--neo-light);
+  }
+  .neo-inset-lg {
+    box-shadow:
+      inset 6px 6px 14px var(--neo-dark),
+      inset -6px -6px 14px var(--neo-light);
+  }
+}
+
+@keyframes reel-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes eq-bounce {
+  0%,
+  100% {
+    transform: scaleY(0.25);
+  }
+  50% {
+    transform: scaleY(1);
+  }
 }
