@@ -1,0 +1,97 @@
+"use client"
+
+import * as React from "react"
+
+import { useAudioAnalyser } from "@/hooks/use-audio-analyser"
+import { cn } from "@/lib/utils"
+
+const COLUMN_COUNT = 24
+const ROWS = 2
+const REST_OPACITY = 0.15
+
+interface AudioVisualizerDotsProps {
+  audioRef: React.RefObject<HTMLAudioElement | null>
+  isPlaying: boolean
+  /** Mirror which frequency bin feeds which column (bass on the right instead of the left). */
+  reverse?: boolean
+  className?: string
+}
+
+export function AudioVisualizerDots({
+  audioRef,
+  isPlaying,
+  reverse = false,
+  className,
+}: AudioVisualizerDotsProps) {
+  // dotRefs[column][row], row 0 is the bottom dot.
+  const dotRefs = React.useRef<(HTMLSpanElement | null)[][]>(
+    Array.from({ length: COLUMN_COUNT }, () => [])
+  )
+  const rafRef = React.useRef<number | null>(null)
+  const { analyserRef, audioContextRef } = useAudioAnalyser(audioRef)
+
+  const setColumnLit = React.useCallback((column: number, litCount: number) => {
+    dotRefs.current[column].forEach((dot, row) => {
+      if (dot) dot.style.opacity = row < litCount ? "1" : String(REST_OPACITY)
+    })
+  }, [])
+
+  React.useEffect(() => {
+    const analyser = analyserRef.current
+    const audioContext = audioContextRef.current
+    if (!analyser || !audioContext) return
+
+    if (!isPlaying) {
+      for (let i = 0; i < COLUMN_COUNT; i++) setColumnLit(i, 0)
+      return
+    }
+
+    audioContext.resume()
+    const dataArray = new Uint8Array(analyser.frequencyBinCount)
+
+    const tick = () => {
+      analyser.getByteFrequencyData(dataArray)
+      for (let i = 0; i < COLUMN_COUNT; i++) {
+        const binIndex = reverse ? COLUMN_COUNT - 1 - i : i
+        const amplitude = dataArray[binIndex] / 255
+        setColumnLit(i, Math.round(amplitude * ROWS))
+      }
+      rafRef.current = requestAnimationFrame(tick)
+    }
+    rafRef.current = requestAnimationFrame(tick)
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    }
+  }, [isPlaying, reverse, analyserRef, audioContextRef, setColumnLit])
+
+  return (
+    <div
+      className={cn(
+        "neo-inset-sm flex h-3 flex-1 items-center justify-between gap-0.5 overflow-hidden rounded-full px-1.5",
+        className
+      )}
+    >
+      {Array.from({ length: COLUMN_COUNT }).map((_, col) => (
+        <div
+          key={col}
+          className="flex flex-1 flex-col-reverse items-center gap-0.5"
+        >
+          {Array.from({ length: ROWS }).map((_, row) => (
+            <span
+              key={row}
+              ref={(el) => {
+                dotRefs.current[col][row] = el
+              }}
+              className="size-0.75 rounded-full transition-opacity duration-75 ease-out"
+              style={{
+                backgroundColor: "var(--neo-led)",
+                opacity: REST_OPACITY,
+              }}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}

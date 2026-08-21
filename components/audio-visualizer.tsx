@@ -2,9 +2,9 @@
 
 import * as React from "react"
 
+import { useAudioAnalyser } from "@/hooks/use-audio-analyser"
 import { cn } from "@/lib/utils"
 
-const FFT_SIZE = 64
 const BAR_COUNT = 24
 const REST_SCALE = 0.12
 
@@ -20,34 +20,8 @@ export function AudioVisualizer({
   className,
 }: AudioVisualizerProps) {
   const barRefs = React.useRef<(HTMLSpanElement | null)[]>([])
-  const audioContextRef = React.useRef<AudioContext | null>(null)
-  const analyserRef = React.useRef<AnalyserNode | null>(null)
   const rafRef = React.useRef<number | null>(null)
-  const connectedRef = React.useRef(false)
-
-  // A media element can only ever be routed into one MediaElementSourceNode,
-  // so this graph is built once for the lifetime of the <audio> element.
-  React.useEffect(() => {
-    const audio = audioRef.current
-    if (!audio || connectedRef.current) return
-    connectedRef.current = true
-
-    const audioContext = new AudioContext()
-    const analyser = audioContext.createAnalyser()
-    analyser.fftSize = FFT_SIZE
-    analyser.smoothingTimeConstant = 0.8
-
-    const source = audioContext.createMediaElementSource(audio)
-    source.connect(analyser)
-    analyser.connect(audioContext.destination)
-
-    audioContextRef.current = audioContext
-    analyserRef.current = analyser
-
-    return () => {
-      audioContext.close()
-    }
-  }, [audioRef])
+  const { analyserRef, audioContextRef } = useAudioAnalyser(audioRef)
 
   React.useEffect(() => {
     const analyser = analyserRef.current

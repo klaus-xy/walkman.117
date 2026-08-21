@@ -16,7 +16,8 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { AudioVisualizer } from "@/components/audio-visualizer"
+import { tracks } from "@/lib/tracks"
+import { AudioVisualizerDots } from "@/components/audio-visualizer-dots"
 import {
   Drawer,
   DrawerContent,
@@ -26,59 +27,6 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { Slider } from "@/components/ui/slider"
-
-type Track = {
-  id: string
-  title: string
-  artist: string
-  // Drop matching audio files into /public/audio to make these play.
-  src: string
-}
-
-const tracks: Track[] = [
-  {
-    id: "t1",
-    title: "She Could Be You",
-    artist: "Shawn Hlookoff",
-    src: "/audio/SheCouldBeYou.mp3",
-  },
-  {
-    id: "t2",
-    title: "Beneath Your Beautiful",
-    artist: "Labrinth",
-    src: "/audio/Labrinth_Beneath_Your_Beautiful.mp3",
-  },
-  {
-    id: "t3",
-    title: "Midnight City",
-    artist: "M38",
-    src: "/audio/M38-Midnight_City.mp3",
-  },
-  {
-    id: "t4",
-    title: "Prairies",
-    artist: "BoyWithUke",
-    src: "/audio/Boywithuke-Prairies.mp3",
-  },
-  {
-    id: "t5",
-    title: "Okunkun",
-    artist: "Solana ft Killertunes",
-    src: "/audio/Solana_ft_Killertunes-Okunkun.mp3",
-  },
-  {
-    id: "t6",
-    title: "U Made A Smart Girl Dumb!!",
-    artist: "panicbaby",
-    src: "/audio/Panicbaby-U Made A Smart Girl Dumb!!.mp3",
-  },
-  {
-    id: "t7",
-    title: "Self Aware",
-    artist: "Temper City",
-    src: "/audio/Temper_City-Self_Aware.mp3",
-  },
-]
 
 type RepeatMode = "off" | "all" | "one"
 
@@ -315,7 +263,7 @@ export function MusicPlayer() {
 
           <div className="neo-inset flex items-center gap-4 rounded-2xl p-5">
             <Reel spinning={isPlaying} />
-            <AudioVisualizer audioRef={audioRef} isPlaying={isPlaying} />
+            <AudioVisualizerDots audioRef={audioRef} isPlaying={isPlaying} />
             <Reel spinning={isPlaying} />
           </div>
 
@@ -426,7 +374,7 @@ export function MusicPlayer() {
             {tracks.length} track{tracks.length === 1 ? "" : "s"}
           </DrawerDescription>
         </DrawerHeader>
-        <div className="flex flex-col gap-1 overflow-y-auto p-4 pt-2">
+        <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-4 pt-2">
           {tracks.map((track, index) => {
             const active = index === currentIndex
             const trackDuration = durations[track.id]
