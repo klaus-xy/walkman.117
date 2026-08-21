@@ -68,14 +68,14 @@ export function AudioVisualizerDots({
   return (
     <div
       className={cn(
-        "neo-inset-sm flex h-3 min-w-0 flex-1 items-center justify-between gap-0.5 overflow-hidden rounded-full px-1.5",
+        "neo-inset-sm flex h-3.5 min-w-0 flex-1 items-center justify-between gap-0.5 overflow-hidden rounded-full px-1.5 sm:h-4",
         className
       )}
     >
       {Array.from({ length: COLUMN_COUNT }).map((_, col) => (
         <div
           key={col}
-          className="flex min-w-0 flex-1 flex-col-reverse items-center gap-0.5"
+          className="gap-0.15 flex min-w-0 flex-1 flex-col-reverse items-center"
         >
           {Array.from({ length: ROWS }).map((_, row) => (
             <span
