@@ -6,7 +6,7 @@ import { useAudioAnalyser } from "@/hooks/use-audio-analyser"
 import { cn } from "@/lib/utils"
 
 const COLUMN_COUNT = 24
-const ROWS = 2
+const DEFAULT_ROWS = 2
 const REST_OPACITY = 0.15
 
 interface AudioVisualizerDotsProps {
@@ -14,6 +14,8 @@ interface AudioVisualizerDotsProps {
   isPlaying: boolean
   /** Mirror which frequency bin feeds which column (bass on the right instead of the left). */
   reverse?: boolean
+  /** How many dots tall each column is — more rows means finer amplitude resolution per bin. */
+  rows?: number
   className?: string
 }
 
@@ -21,6 +23,7 @@ export function AudioVisualizerDots({
   audioRef,
   isPlaying,
   reverse = false,
+  rows = DEFAULT_ROWS,
   className,
 }: AudioVisualizerDotsProps) {
   // dotRefs[column][row], row 0 is the bottom dot.
@@ -54,7 +57,7 @@ export function AudioVisualizerDots({
       for (let i = 0; i < COLUMN_COUNT; i++) {
         const binIndex = reverse ? COLUMN_COUNT - 1 - i : i
         const amplitude = dataArray[binIndex] / 255
-        setColumnLit(i, Math.round(amplitude * ROWS))
+        setColumnLit(i, Math.round(amplitude * rows))
       }
       rafRef.current = requestAnimationFrame(tick)
     }
@@ -63,7 +66,7 @@ export function AudioVisualizerDots({
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
     }
-  }, [isPlaying, reverse, analyserRef, audioContextRef, setColumnLit])
+  }, [isPlaying, reverse, rows, analyserRef, audioContextRef, setColumnLit])
 
   return (
     <div
@@ -77,7 +80,7 @@ export function AudioVisualizerDots({
           key={col}
           className="gap-0.15 flex min-w-0 flex-1 flex-col-reverse items-center"
         >
-          {Array.from({ length: ROWS }).map((_, row) => (
+          {Array.from({ length: rows }).map((_, row) => (
             <span
               key={row}
               ref={(el) => {

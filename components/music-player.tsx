@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { animate, motion, useAnimationFrame, useMotionValue } from "framer-motion"
 import {
   ListMusic,
   Pause,
@@ -59,22 +60,40 @@ function DeckButton({
   )
 }
 
+const REEL_TARGET_DEG_PER_SEC = 360 / 3 // matches the previous 3s-per-revolution pace
+const REEL_RAMP_SECONDS = 1.1
+
 function Reel({ spinning }: { spinning: boolean }) {
+  const rotation = useMotionValue(0)
+  const velocity = useMotionValue(0)
+
+  React.useEffect(() => {
+    const controls = animate(
+      velocity,
+      spinning ? REEL_TARGET_DEG_PER_SEC : 0,
+      { duration: REEL_RAMP_SECONDS, ease: "easeInOut" }
+    )
+    return () => controls.stop()
+  }, [spinning, velocity])
+
+  useAnimationFrame((_, delta) => {
+    rotation.set(rotation.get() + velocity.get() * (delta / 1000))
+  })
+
   return (
-    <div
-      className="neo-inset relative flex size-16 shrink-0 items-center justify-center rounded-full sm:size-20"
-      style={{
-        animation: "reel-spin 3s linear infinite",
-        animationPlayState: spinning ? "running" : "paused",
-      }}
-    >
-      {[0, 45, 90, 135].map((deg) => (
-        <span
-          key={deg}
-          className="absolute h-[65%] w-px bg-muted-foreground/25"
-          style={{ transform: `rotate(${deg}deg)` }}
-        />
-      ))}
+    <div className="neo-inset relative flex size-16 shrink-0 items-center justify-center rounded-full sm:size-20">
+      <motion.div
+        className="absolute inset-0 flex items-center justify-center"
+        style={{ rotate: rotation }}
+      >
+        {[0, 45, 90, 135].map((deg) => (
+          <span
+            key={deg}
+            className="absolute h-[65%] w-px bg-muted-foreground/25"
+            style={{ transform: `rotate(${deg}deg)` }}
+          />
+        ))}
+      </motion.div>
       <span className="neo-raised-sm relative size-4 rounded-full bg-background" />
     </div>
   )
@@ -263,7 +282,11 @@ export function MusicPlayer() {
 
           <div className="neo-inset flex items-center gap-4 rounded-2xl p-5">
             <Reel spinning={isPlaying} />
-            <AudioVisualizerDots audioRef={audioRef} isPlaying={isPlaying} />
+            <AudioVisualizerDots
+              audioRef={audioRef}
+              isPlaying={isPlaying}
+              rows={3}
+            />
             <Reel spinning={isPlaying} />
           </div>
 
