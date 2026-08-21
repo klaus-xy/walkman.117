@@ -350,7 +350,7 @@ export function MusicPlayer({ hasBooted = true }: { hasBooted?: boolean }) {
             </div>
           </div>
 
-          <div className="neo-inset relative flex flex-col items-center gap-2 rounded-2xl p-5">
+          <div className="neo-inset neo-glass-cover relative flex flex-col items-center gap-2 rounded-2xl p-5">
             <div className="flex w-full items-center gap-4">
               <Reel spinning={isPlaying} />
               <AudioVisualizerDots

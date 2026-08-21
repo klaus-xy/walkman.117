@@ -24,9 +24,9 @@ export default function Page() {
     <BootScreen onBooted={() => setHasBooted(true)}>
       <div className="flex min-h-svh flex-col p-4 sm:p-8">
         <header className="fixed pt-4 pb-2">
-          <h1 className="text-lg font-bold tracking-[0.3em] text-neo-led-dim sm:text-xl sm:tracking-[0.4em]">
+          {/* <h1 className="text-base font-bold tracking-[0.3em] text-neo-led-dim sm:text-xl sm:tracking-[0.4em]">
             WALKMAN<span style={{ color: "var(--neo-led)" }}>::</span>117
-          </h1>
+          </h1> */}
           {/* <p className="mt-1 font-mono text-[9px] tracking-[0.3em] text-muted-foreground/50">
             PERSONAL STEREO
           </p> */}
@@ -36,7 +36,7 @@ export default function Page() {
         </div>
         <footer className="pb-2 text-center font-semibold">
           <p className="text-[0.5rem] tracking-[0.2em] text-muted-foreground/60 sm:text-[0.65rem]">
-            WALKMAN.117 :: CRAFTED BY{" "}
+            WALKMAN <span className="text-neo-led">::</span> 117 | CRAFTED BY{" "}
             <a
               href="https://x.com/0xKlaus117"
               target="_blank"
