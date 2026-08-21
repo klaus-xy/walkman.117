@@ -57,7 +57,7 @@ export function AudioVisualizer({
   return (
     <div
       className={cn(
-        "neo-inset-sm flex h-3 flex-1 items-center gap-[2px] overflow-hidden rounded-full px-1.5",
+        "neo-inset-sm flex h-3 min-w-0 flex-1 items-center gap-[2px] overflow-hidden rounded-full px-1.5",
         className
       )}
     >
@@ -67,7 +67,7 @@ export function AudioVisualizer({
           ref={(el) => {
             barRefs.current[i] = el
           }}
-          className="h-full flex-1 rounded-full transition-transform duration-75 ease-out will-change-transform"
+          className="h-full min-w-0 flex-1 rounded-full transition-transform duration-75 ease-out will-change-transform"
           style={{
             backgroundColor: "var(--neo-led)",
             transform: `scaleY(${REST_SCALE})`,
