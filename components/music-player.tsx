@@ -1,7 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { animate, motion, useAnimationFrame, useMotionValue } from "framer-motion"
+import {
+  animate,
+  motion,
+  useAnimationFrame,
+  useMotionValue,
+} from "framer-motion"
 import {
   ListMusic,
   Pause,
@@ -68,11 +73,10 @@ function Reel({ spinning }: { spinning: boolean }) {
   const velocity = useMotionValue(0)
 
   React.useEffect(() => {
-    const controls = animate(
-      velocity,
-      spinning ? REEL_TARGET_DEG_PER_SEC : 0,
-      { duration: REEL_RAMP_SECONDS, ease: "easeInOut" }
-    )
+    const controls = animate(velocity, spinning ? REEL_TARGET_DEG_PER_SEC : 0, {
+      duration: REEL_RAMP_SECONDS,
+      ease: "easeInOut",
+    })
     return () => controls.stop()
   }, [spinning, velocity])
 
@@ -81,7 +85,7 @@ function Reel({ spinning }: { spinning: boolean }) {
   })
 
   return (
-    <div className="neo-inset relative flex size-16 shrink-0 items-center justify-center rounded-full sm:size-20">
+    <div className="neo-raised-lg neo-donut neo-half-pop-radial relative flex size-16 shrink-0 items-center justify-center rounded-full sm:size-20">
       <motion.div
         className="absolute inset-0 flex items-center justify-center"
         style={{ rotate: rotation }}
@@ -94,7 +98,7 @@ function Reel({ spinning }: { spinning: boolean }) {
           />
         ))}
       </motion.div>
-      <span className="neo-raised-sm relative size-4 rounded-full bg-background" />
+      <span className="neo-inset-sm relative size-4 rounded-full bg-background" />
     </div>
   )
 }

@@ -8,6 +8,12 @@ export type Track = {
 
 export const tracks: Track[] = [
   {
+    id: "t0",
+    title: "Heaven Baby",
+    artist: "Ayra Starr ft ZAYN",
+    src: "/audio/Ayra-Starr-Heaven-Baby-ft-ZAYN.mp3",
+  },
+  {
     id: "t1",
     title: "She Could Be You",
     artist: "Shawn Hlookoff",

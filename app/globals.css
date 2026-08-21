@@ -171,6 +171,37 @@
       inset 6px 6px 14px var(--neo-dark),
       inset -6px -6px 14px var(--neo-light);
   }
+  .neo-donut {
+    background: radial-gradient(
+      circle,
+      var(--background) 32%,
+      var(--neo-light) 60%,
+      var(--neo-dark) 100%
+    );
+  }
+  .neo-half-pop {
+    mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 54%);
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      black 0%,
+      black 50%,
+      transparent 54%
+    );
+  }
+  .neo-half-pop-radial {
+    mask-image: radial-gradient(
+      circle,
+      black 0%,
+      black 45%,
+      transparent 72%
+    );
+    -webkit-mask-image: radial-gradient(
+      circle,
+      black 0%,
+      black 45%,
+      transparent 72%
+    );
+  }
 }
 
 @keyframes reel-spin {
