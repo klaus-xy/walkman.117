@@ -22,9 +22,17 @@ export default function Page() {
 
   return (
     <BootScreen onBooted={() => setHasBooted(true)}>
-      <div className="flex min-h-svh flex-col p-6">
+      <div className="flex min-h-svh flex-col p-4 sm:p-8">
+        <header className="fixed pt-4 pb-2">
+          <h1 className="text-lg font-bold tracking-[0.3em] text-neo-led-dim sm:text-xl sm:tracking-[0.4em]">
+            WALKMAN<span style={{ color: "var(--neo-led)" }}>::</span>117
+          </h1>
+          {/* <p className="mt-1 font-mono text-[9px] tracking-[0.3em] text-muted-foreground/50">
+            PERSONAL STEREO
+          </p> */}
+        </header>
         <div className="flex flex-1 items-center justify-center">
-          <MusicPlayer />
+          <MusicPlayer hasBooted={hasBooted} />
         </div>
         <footer className="pb-2 text-center font-semibold">
           <p className="text-[0.5rem] tracking-[0.2em] text-muted-foreground/60 sm:text-[0.65rem]">

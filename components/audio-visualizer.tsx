@@ -57,7 +57,7 @@ export function AudioVisualizer({
   return (
     <div
       className={cn(
-        "neo-inset-sm flex h-3 min-w-0 flex-1 items-center gap-[2px] overflow-hidden rounded-full px-1.5",
+        "neo-inset-sm flex h-3 min-w-0 flex-1 items-center gap-0.5 overflow-hidden rounded-full px-1.5",
         className
       )}
     >

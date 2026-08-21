@@ -14,11 +14,13 @@ interface BootScreenProps {
   onBooted?: () => void
 }
 
+const BOOT_TEXT = "WALKMAN :: 117"
+
 export function BootScreen({ children, onBooted }: BootScreenProps) {
   const [booted, setBooted] = React.useState(false)
   const [hidden, setHidden] = React.useState(false)
   const { scrambledText, isComplete } = useScrambleText({
-    text: "WALKMAN // 117",
+    text: BOOT_TEXT,
     chars: "::",
     scrambleSpeed: 80,
     revealSpeed: 2,
@@ -66,7 +68,15 @@ export function BootScreen({ children, onBooted }: BootScreenProps) {
             )}
           >
             {scrambledText.split("").map((char, i) => (
-              <span key={i} className="inline-block w-[0.75em] text-center">
+              <span
+                key={i}
+                className="inline-block w-[0.75em] text-center"
+                style={
+                  BOOT_TEXT[i] === ":" && isComplete
+                    ? { animation: "led-pop 700ms ease-out forwards" }
+                    : undefined
+                }
+              >
                 {char}
               </span>
             ))}

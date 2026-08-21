@@ -255,3 +255,26 @@
     opacity: 1;
   }
 }
+
+@keyframes led-pop {
+  0% {
+    color: var(--muted-foreground);
+    text-shadow: none;
+    transform: scale(1);
+  }
+  35% {
+    color: var(--neo-led);
+    text-shadow: 0 0 10px var(--neo-led);
+    transform: scale(1.5);
+  }
+  65% {
+    color: var(--neo-led);
+    text-shadow: 0 0 10px var(--neo-led);
+    transform: scale(1.5);
+  }
+  100% {
+    color: var(--neo-led);
+    text-shadow: 0 0 4px var(--neo-led);
+    transform: scale(1);
+  }
+}

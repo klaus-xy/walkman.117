@@ -21,6 +21,7 @@ import {
   VolumeX,
 } from "lucide-react"
 
+import { useAudioAnalyser } from "@/hooks/use-audio-analyser"
 import useScrambleText from "@/hooks/use-scramble-text"
 import { cn } from "@/lib/utils"
 import { tracks } from "@/lib/tracks"
@@ -103,9 +104,21 @@ function Reel({ spinning }: { spinning: boolean }) {
           />
         ))}
       </motion.div>
-      <span className="neo-inset-sm relative size-4 rounded-full bg-background" />
+      <span className="neo-donut relative size-4 rounded-full bg-background" />
     </div>
   )
+}
+
+// Mounted fresh only once boot finishes, so its scramble animation starts
+// right then instead of already being resolved by the time it's visible.
+function ScrambledKhz({ text }: { text: string }) {
+  const { scrambledText } = useScrambleText({
+    text,
+    chars: "0123456789",
+    scrambleSpeed: 60,
+    revealSpeed: 3,
+  })
+  return <>{scrambledText}</>
 }
 
 function StatusLed({ active, label }: { active: boolean; label: string }) {
@@ -148,9 +161,10 @@ function NowPlayingBars() {
   )
 }
 
-export function MusicPlayer() {
+export function MusicPlayer({ hasBooted = true }: { hasBooted?: boolean }) {
   const audioRef = React.useRef<HTMLAudioElement>(null)
   const autoplayIntent = React.useRef(false)
+  const { sampleRate } = useAudioAnalyser(audioRef)
 
   const [currentIndex, setCurrentIndex] = React.useState(0)
   const [isPlaying, setIsPlaying] = React.useState(false)
@@ -297,9 +311,24 @@ export function MusicPlayer() {
 
         <section className="neo-raised-lg flex flex-col gap-6 rounded-[2rem] p-6 sm:p-8">
           <div className="flex items-center justify-between">
-            <span className="font-mono text-xs tracking-[0.3em] text-muted-foreground">
-              WALKMAN // 117
+            <span className="text-xs font-semibold tracking-[0.3em] text-muted-foreground">
+              ::01
             </span>
+
+            {/* <div className="flex items-center gap-3">
+              {" "}
+              <StatusLed active={shuffle} label="SHUF" />
+              <StatusLed
+                active={repeatMode !== "off"}
+                label={
+                  repeatMode === "one"
+                    ? "RPT-1"
+                    : repeatMode === "all"
+                      ? "RPT-ALL"
+                      : "RPT"
+                }
+              />
+            </div> */}
             <div className="flex items-center gap-3">
               <StatusLed active={shuffle} label="SHUF" />
               <StatusLed
@@ -321,14 +350,27 @@ export function MusicPlayer() {
             </div>
           </div>
 
-          <div className="neo-inset neo-glass-cover flex items-center gap-4 rounded-2xl p-5">
-            <Reel spinning={isPlaying} />
-            <AudioVisualizerDots
-              audioRef={audioRef}
-              isPlaying={isPlaying}
-              rows={3}
-            />
-            <Reel spinning={isPlaying} />
+          <div className="neo-inset relative flex flex-col items-center gap-2 rounded-2xl p-5">
+            <div className="flex w-full items-center gap-4">
+              <Reel spinning={isPlaying} />
+              <AudioVisualizerDots
+                audioRef={audioRef}
+                isPlaying={isPlaying}
+                rows={3}
+              />
+              <Reel spinning={isPlaying} />
+            </div>
+            {sampleRate ? (
+              <p className="absolute bottom-5 font-mono text-[10px] tracking-widest text-muted-foreground/50">
+                {hasBooted ? (
+                  <ScrambledKhz
+                    text={`${(sampleRate / 1000).toFixed(1)} KHZ`}
+                  />
+                ) : (
+                  `${(sampleRate / 1000).toFixed(1)} KHZ`
+                )}
+              </p>
+            ) : null}
           </div>
 
           <div className="text-center">
@@ -430,7 +472,7 @@ export function MusicPlayer() {
       <DrawerContent className="neo-raised-lg rounded-t-[2rem] bg-background">
         <DrawerHeader>
           <DrawerTitle className="font-mono text-xs tracking-[0.3em] text-muted-foreground">
-            PLAYLIST // 00
+            PLAYLIST // 01
           </DrawerTitle>
           <DrawerDescription>
             {tracks.length} track{tracks.length === 1 ? "" : "s"}

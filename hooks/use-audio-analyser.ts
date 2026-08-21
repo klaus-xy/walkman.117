@@ -19,6 +19,7 @@ export function useAudioAnalyser(
 ) {
   const analyserRef = React.useRef<AnalyserNode | null>(null)
   const audioContextRef = React.useRef<AudioContext | null>(null)
+  const [sampleRate, setSampleRate] = React.useState<number | null>(null)
 
   React.useEffect(() => {
     const audio = audioRef.current
@@ -40,7 +41,8 @@ export function useAudioAnalyser(
 
     analyserRef.current = analyser
     audioContextRef.current = analyser.context as AudioContext
+    setSampleRate(analyser.context.sampleRate)
   }, [audioRef, fftSize, smoothingTimeConstant])
 
-  return { analyserRef, audioContextRef }
+  return { analyserRef, audioContextRef, sampleRate }
 }
