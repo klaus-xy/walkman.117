@@ -1,9 +1,27 @@
+"use client"
+import * as React from "react"
+
 import { BootScreen } from "@/components/boot-screen"
 import { MusicPlayer } from "@/components/music-player"
+import useScrambleText from "@/hooks/use-scramble-text"
+
+// Mounted fresh only once boot finishes, so its scramble animation starts
+// right then instead of already being resolved by the time it's visible.
+function ScrambledName() {
+  const { scrambledText } = useScrambleText({
+    text: "KLAUS117",
+    chars: "KLAUS117:",
+    scrambleSpeed: 80,
+    revealSpeed: 3,
+  })
+  return <>{scrambledText}</>
+}
 
 export default function Page() {
+  const [hasBooted, setHasBooted] = React.useState(false)
+
   return (
-    <BootScreen>
+    <BootScreen onBooted={() => setHasBooted(true)}>
       <div className="flex min-h-svh flex-col p-6">
         <div className="flex flex-1 items-center justify-center">
           <MusicPlayer />
@@ -17,7 +35,7 @@ export default function Page() {
               rel="noopener noreferrer"
               className="font-semibold text-neo-led hover:underline"
             >
-              KLAUS117
+              {hasBooted ? <ScrambledName /> : "KLAUS117"}
             </a>
           </p>
         </footer>

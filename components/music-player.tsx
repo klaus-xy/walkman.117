@@ -21,6 +21,7 @@ import {
   VolumeX,
 } from "lucide-react"
 
+import useScrambleText from "@/hooks/use-scramble-text"
 import { cn } from "@/lib/utils"
 import { tracks } from "@/lib/tracks"
 import { AudioVisualizerDots } from "@/components/audio-visualizer-dots"
@@ -35,6 +36,10 @@ import {
 import { Slider } from "@/components/ui/slider"
 
 type RepeatMode = "off" | "all" | "one"
+
+// Stable module-level reference so the scramble effect doesn't restart on
+// every render (a new RegExp literal inline would be a fresh object each time).
+const TITLE_SCRAMBLE_PRESERVE_PATTERN = /[^a-zA-Z0-9!]/
 
 function formatTime(totalSeconds: number) {
   if (!Number.isFinite(totalSeconds) || totalSeconds < 0) return "--:--"
@@ -85,7 +90,7 @@ function Reel({ spinning }: { spinning: boolean }) {
   })
 
   return (
-    <div className="neo-raised-lg neo-donut neo-half-pop-radial relative flex size-16 shrink-0 items-center justify-center rounded-full sm:size-20">
+    <div className="neo-raised neo-donut relative flex size-16 shrink-0 items-center justify-center rounded-full sm:size-20">
       <motion.div
         className="absolute inset-0 flex items-center justify-center"
         style={{ rotate: rotation }}
@@ -100,6 +105,28 @@ function Reel({ spinning }: { spinning: boolean }) {
       </motion.div>
       <span className="neo-inset-sm relative size-4 rounded-full bg-background" />
     </div>
+  )
+}
+
+function StatusLed({ active, label }: { active: boolean; label: string }) {
+  return (
+    <span className="flex items-center gap-1">
+      <span
+        className="size-1.5 shrink-0 rounded-full transition-colors duration-300"
+        style={{
+          backgroundColor: active ? "var(--neo-led)" : "var(--neo-led-dim)",
+          boxShadow: active ? "0 0 4px var(--neo-led)" : "none",
+        }}
+      />
+      <span
+        className={cn(
+          "font-mono text-[9px] tracking-widest transition-colors duration-300",
+          active ? "text-muted-foreground" : "text-muted-foreground/40"
+        )}
+      >
+        {label}
+      </span>
+    </span>
   )
 }
 
@@ -139,6 +166,13 @@ export function MusicPlayer() {
   >({})
 
   const currentTrack = tracks[currentIndex]
+  const { scrambledText: titleText } = useScrambleText({
+    text: currentTrack.title,
+    chars: ":",
+    scrambleSpeed: 50,
+    revealSpeed: 3,
+    preservePattern: TITLE_SCRAMBLE_PRESERVE_PATTERN,
+  })
 
   React.useEffect(() => {
     const probes = tracks.map((track) => {
@@ -266,15 +300,18 @@ export function MusicPlayer() {
             <span className="font-mono text-xs tracking-[0.3em] text-muted-foreground">
               WALKMAN // 117
             </span>
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-[10px] tracking-widest text-muted-foreground/70">
-                {shuffle ? "SHUF " : ""}
-                {repeatMode !== "off"
-                  ? repeatMode === "one"
+            <div className="flex items-center gap-3">
+              <StatusLed active={shuffle} label="SHUF" />
+              <StatusLed
+                active={repeatMode !== "off"}
+                label={
+                  repeatMode === "one"
                     ? "RPT-1"
-                    : "RPT-ALL"
-                  : ""}
-              </span>
+                    : repeatMode === "all"
+                      ? "RPT-ALL"
+                      : "RPT"
+                }
+              />
               <DrawerTrigger
                 aria-label="Open playlist"
                 className="neo-raised-sm flex size-8 shrink-0 items-center justify-center rounded-full text-foreground transition-all outline-none focus-visible:ring-3 focus-visible:ring-ring/50 active:translate-y-px"
@@ -284,7 +321,7 @@ export function MusicPlayer() {
             </div>
           </div>
 
-          <div className="neo-inset flex items-center gap-4 rounded-2xl p-5">
+          <div className="neo-inset neo-glass-cover flex items-center gap-4 rounded-2xl p-5">
             <Reel spinning={isPlaying} />
             <AudioVisualizerDots
               audioRef={audioRef}
@@ -295,9 +332,7 @@ export function MusicPlayer() {
           </div>
 
           <div className="text-center">
-            <p className="truncate text-lg font-semibold">
-              {currentTrack.title}
-            </p>
+            <p className="truncate text-lg font-semibold">{titleText}</p>
             <p className="truncate text-sm text-muted-foreground">
               {currentTrack.artist}
             </p>

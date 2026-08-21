@@ -24,19 +24,25 @@ const useScrambleText = ({
   revealSpeed = 3,
   preservePattern = DEFAULT_PRESERVE_PATTERN,
 }: UseScrambleTextProps) => {
-  const scramble = (revealedCount: number) =>
+  const scramble = (revealedCount: number, deterministic = false) =>
     text
       .split("")
       .map((char, i) => {
         if (preservePattern.test(char)) return char
         if (i < revealedCount) return char
+        // The lazy initializer below runs during SSR too, so it must produce
+        // the exact same output on the server and the client's first render
+        // — Math.random() would desync the two and break hydration. Every
+        // later update (inside useEffect) only ever runs client-side, so it's
+        // free to use real randomness.
+        if (deterministic) return chars[i % chars.length]
         return chars[Math.floor(Math.random() * chars.length)]
       })
       .join("")
 
   // Lazy initializer so the very first paint is already scrambled,
   // instead of flashing the plain `text` before the interval's first tick.
-  const [scrambledText, setScrambledText] = useState(() => scramble(0))
+  const [scrambledText, setScrambledText] = useState(() => scramble(0, true))
   const [isComplete, setIsComplete] = useState(false)
 
   useEffect(() => {

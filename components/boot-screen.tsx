@@ -8,7 +8,13 @@ import { cn } from "@/lib/utils"
 const BOOT_MS = 1700
 const FADE_MS = 1000
 
-export function BootScreen({ children }: { children: React.ReactNode }) {
+interface BootScreenProps {
+  children: React.ReactNode
+  /** Fires once, right as the boot overlay starts fading out. */
+  onBooted?: () => void
+}
+
+export function BootScreen({ children, onBooted }: BootScreenProps) {
   const [booted, setBooted] = React.useState(false)
   const [hidden, setHidden] = React.useState(false)
   const { scrambledText, isComplete } = useScrambleText({
@@ -18,9 +24,15 @@ export function BootScreen({ children }: { children: React.ReactNode }) {
     revealSpeed: 2,
   })
 
+  const onBootedRef = React.useRef(onBooted)
+  onBootedRef.current = onBooted
+
   React.useEffect(() => {
     if (!isComplete) return
-    const bootTimer = setTimeout(() => setBooted(true), BOOT_MS)
+    const bootTimer = setTimeout(() => {
+      setBooted(true)
+      onBootedRef.current?.()
+    }, BOOT_MS)
     return () => clearTimeout(bootTimer)
   }, [isComplete])
 
