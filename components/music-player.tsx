@@ -16,7 +16,6 @@ import {
   Shuffle,
   SkipBack,
   SkipForward,
-  Sparkles,
   Volume1,
   Volume2,
   VolumeX,
@@ -105,7 +104,7 @@ function Reel({ spinning }: { spinning: boolean }) {
           />
         ))}
       </motion.div>
-      <span className="neo-donut relative size-4 rounded-full bg-background" />
+      <span className="neo-inset relative size-4 rounded-full bg-background" />
     </div>
   )
 }
@@ -120,6 +119,41 @@ function ScrambledKhz({ text }: { text: string }) {
     revealSpeed: 3,
   })
   return <>{scrambledText}</>
+}
+
+function VerticalToggle({
+  checked,
+  onCheckedChange,
+  label,
+}: {
+  checked: boolean
+  onCheckedChange: (checked: boolean) => void
+  label: string
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      onClick={() => onCheckedChange(!checked)}
+      className="neo-inset absolute top-1/2 right-[-4.5%] z-10 flex h-8 w-3 shrink-0 -translate-y-1/2 flex-col items-center rounded-full p-0.5 transition-colors duration-300 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 sm:-right-[6%]"
+      style={{
+        backgroundColor: checked ? "var(--neo-led)" : undefined,
+      }}
+    >
+      <span
+        className="h-2 w-3 rounded-full transition-transform duration-300 ease-out"
+        style={{
+          transform: checked ? "translateY(1.25rem)" : "translateY(0)",
+          backgroundColor: checked ? "var(--neo-led)" : "var(--background)",
+          boxShadow: checked
+            ? "0 0 6px var(--neo-led), 1px 1px 3px var(--neo-dark), -1px -1px 2px var(--neo-light)"
+            : "2px 2px 4px var(--neo-dark), -2px -2px 4px var(--neo-light)",
+        }}
+      />
+    </button>
+  )
 }
 
 function StatusLed({ active, label }: { active: boolean; label: string }) {
@@ -175,7 +209,7 @@ export function MusicPlayer({ hasBooted = true }: { hasBooted?: boolean }) {
   const [volume, setVolume] = React.useState(0.75)
   const [muted, setMuted] = React.useState(false)
   const [shuffle, setShuffle] = React.useState(false)
-  const [glassCover, setGlassCover] = React.useState(true)
+  const [glassCover, setGlassCover] = React.useState(false)
   const [repeatMode, setRepeatMode] = React.useState<RepeatMode>("off")
   const [durations, setDurations] = React.useState<
     Record<string, number | null>
@@ -298,7 +332,7 @@ export function MusicPlayer({ hasBooted = true }: { hasBooted?: boolean }) {
 
   return (
     <Drawer showSwipeHandle>
-      <div className="w-full max-w-md">
+      <div className="relative w-full max-w-md">
         <audio
           ref={audioRef}
           src={currentTrack.src}
@@ -343,15 +377,6 @@ export function MusicPlayer({ hasBooted = true }: { hasBooted?: boolean }) {
                       : "RPT"
                 }
               />
-              <DeckButton
-                active={glassCover}
-                aria-label={glassCover ? "Disable glass cover" : "Enable glass cover"}
-                aria-pressed={glassCover}
-                onClick={() => setGlassCover((g) => !g)}
-                className="size-8"
-              >
-                <Sparkles className="size-4" />
-              </DeckButton>
               <DrawerTrigger
                 aria-label="Open playlist"
                 className="neo-raised-sm flex size-8 shrink-0 items-center justify-center rounded-full text-foreground transition-all outline-none focus-visible:ring-3 focus-visible:ring-ring/50 active:translate-y-px"
@@ -361,32 +386,37 @@ export function MusicPlayer({ hasBooted = true }: { hasBooted?: boolean }) {
             </div>
           </div>
 
-          <div
-            className={cn(
-              "neo-inset relative flex flex-col items-center gap-2 rounded-2xl p-5",
-              glassCover && "neo-glass-cover"
-            )}
-          >
-            <div className="flex w-full items-center gap-4">
-              <Reel spinning={isPlaying} />
-              <AudioVisualizerDots
-                audioRef={audioRef}
-                isPlaying={isPlaying}
-                rows={3}
-              />
-              <Reel spinning={isPlaying} />
+          <div className="relative">
+            <VerticalToggle
+              checked={glassCover}
+              onCheckedChange={setGlassCover}
+              label={glassCover ? "Disable glass cover" : "Enable glass cover"}
+            />
+            <div
+              data-glass-off={!glassCover}
+              className="neo-inset neo-glass-cover flex flex-col items-center gap-2 rounded-2xl p-5"
+            >
+              <div className="flex w-full items-center gap-4">
+                <Reel spinning={isPlaying} />
+                <AudioVisualizerDots
+                  audioRef={audioRef}
+                  isPlaying={isPlaying}
+                  rows={3}
+                />
+                <Reel spinning={isPlaying} />
+              </div>
+              {sampleRate ? (
+                <p className="absolute bottom-5 font-mono text-[10px] tracking-widest text-muted-foreground/50">
+                  {hasBooted ? (
+                    <ScrambledKhz
+                      text={`${(sampleRate / 1000).toFixed(1)} KHZ`}
+                    />
+                  ) : (
+                    `${(sampleRate / 1000).toFixed(1)} KHZ`
+                  )}
+                </p>
+              ) : null}
             </div>
-            {sampleRate ? (
-              <p className="absolute bottom-5 font-mono text-[10px] tracking-widest text-muted-foreground/50">
-                {hasBooted ? (
-                  <ScrambledKhz
-                    text={`${(sampleRate / 1000).toFixed(1)} KHZ`}
-                  />
-                ) : (
-                  `${(sampleRate / 1000).toFixed(1)} KHZ`
-                )}
-              </p>
-            ) : null}
           </div>
 
           <div className="text-center">
