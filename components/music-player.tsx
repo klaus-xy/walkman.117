@@ -137,7 +137,7 @@ function VerticalToggle({
       aria-checked={checked}
       aria-label={label}
       onClick={() => onCheckedChange(!checked)}
-      className="neo-inset absolute top-1/2 right-[-4.5%] z-10 flex h-8 w-3 shrink-0 -translate-y-1/2 flex-col items-center rounded-full p-0.5 transition-colors duration-300 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 sm:-right-[6%]"
+      className="neo-inset absolute top-[30%] right-[-6%] z-10 flex h-8 w-4 shrink-0 -translate-y-1/2 flex-col items-center rounded-full p-0.5 transition-colors duration-300 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 sm:-right-[6%]"
       style={{
         backgroundColor: checked ? "var(--neo-led)" : undefined,
       }}
