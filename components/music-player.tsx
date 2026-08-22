@@ -16,6 +16,7 @@ import {
   Shuffle,
   SkipBack,
   SkipForward,
+  Sparkles,
   Volume1,
   Volume2,
   VolumeX,
@@ -174,6 +175,7 @@ export function MusicPlayer({ hasBooted = true }: { hasBooted?: boolean }) {
   const [volume, setVolume] = React.useState(0.75)
   const [muted, setMuted] = React.useState(false)
   const [shuffle, setShuffle] = React.useState(false)
+  const [glassCover, setGlassCover] = React.useState(true)
   const [repeatMode, setRepeatMode] = React.useState<RepeatMode>("off")
   const [durations, setDurations] = React.useState<
     Record<string, number | null>
@@ -341,6 +343,15 @@ export function MusicPlayer({ hasBooted = true }: { hasBooted?: boolean }) {
                       : "RPT"
                 }
               />
+              <DeckButton
+                active={glassCover}
+                aria-label={glassCover ? "Disable glass cover" : "Enable glass cover"}
+                aria-pressed={glassCover}
+                onClick={() => setGlassCover((g) => !g)}
+                className="size-8"
+              >
+                <Sparkles className="size-4" />
+              </DeckButton>
               <DrawerTrigger
                 aria-label="Open playlist"
                 className="neo-raised-sm flex size-8 shrink-0 items-center justify-center rounded-full text-foreground transition-all outline-none focus-visible:ring-3 focus-visible:ring-ring/50 active:translate-y-px"
@@ -350,7 +361,12 @@ export function MusicPlayer({ hasBooted = true }: { hasBooted?: boolean }) {
             </div>
           </div>
 
-          <div className="neo-inset neo-glass-cover relative flex flex-col items-center gap-2 rounded-2xl p-5">
+          <div
+            className={cn(
+              "neo-inset relative flex flex-col items-center gap-2 rounded-2xl p-5",
+              glassCover && "neo-glass-cover"
+            )}
+          >
             <div className="flex w-full items-center gap-4">
               <Reel spinning={isPlaying} />
               <AudioVisualizerDots
