@@ -143,9 +143,9 @@ function VerticalToggle({
       }}
     >
       <span
-        className="h-2 w-3 rounded-full transition-transform duration-300 ease-out"
+        className="h-4 w-3 rounded-full transition-transform duration-300 ease-out"
         style={{
-          transform: checked ? "translateY(1.25rem)" : "translateY(0)",
+          transform: checked ? "translateY(0.75rem)" : "translateY(0)",
           backgroundColor: checked ? "var(--neo-led)" : "var(--background)",
           boxShadow: checked
             ? "0 0 6px var(--neo-led), 1px 1px 3px var(--neo-dark), -1px -1px 2px var(--neo-light)"

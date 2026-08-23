@@ -1,9 +1,11 @@
 "use client"
 import * as React from "react"
+import { motion } from "framer-motion"
 
 import { BootScreen } from "@/components/boot-screen"
 import { MusicPlayer } from "@/components/music-player"
 import useScrambleText from "@/hooks/use-scramble-text"
+import CassetteIcon from "@/components/icons/cassette"
 
 // Mounted fresh only once boot finishes, so its scramble animation starts
 // right then instead of already being resolved by the time it's visible.
@@ -23,14 +25,26 @@ export default function Page() {
   return (
     <BootScreen onBooted={() => setHasBooted(true)}>
       <div className="flex min-h-svh flex-col p-4 sm:p-8">
-        <header className="fixed pt-4 pb-2">
-          {/* <h1 className="text-base font-bold tracking-[0.3em] text-neo-led-dim sm:text-xl sm:tracking-[0.4em]">
-            WALKMAN<span style={{ color: "var(--neo-led)" }}>::</span>117
-          </h1> */}
+        <motion.header
+          className="fixed pt-4 pb-2"
+          initial={{ opacity: 0, y: -6, filter: "blur(4px)" }}
+          animate={
+            hasBooted
+              ? { opacity: 1, y: 0, filter: "blur(0px)" }
+              : { opacity: 0, y: -6, filter: "blur(4px)" }
+          }
+          transition={{ duration: 0.7, ease: "easeOut" }}
+        >
+          <div className="flex items-center gap-[0.4em] text-base font-bold tracking-[0.3em] text-neo-led-dim sm:text-xl sm:tracking-[0.4em]">
+            <CassetteIcon />
+            <h1 className="hidden sm:flex">
+              WALKMAN<span className="text-neo-led">::</span>117
+            </h1>
+          </div>
           {/* <p className="mt-1 font-mono text-[9px] tracking-[0.3em] text-muted-foreground/50">
             PERSONAL STEREO
           </p> */}
-        </header>
+        </motion.header>
         <div className="flex flex-1 items-center justify-center">
           <MusicPlayer hasBooted={hasBooted} />
         </div>
