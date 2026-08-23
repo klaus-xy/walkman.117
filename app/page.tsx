@@ -26,7 +26,7 @@ export default function Page() {
     <BootScreen onBooted={() => setHasBooted(true)}>
       <div className="flex min-h-svh flex-col p-4 sm:p-8">
         <motion.header
-          className="fixed pt-4 pb-2"
+          className="fixed"
           initial={{ opacity: 0, y: -6, filter: "blur(4px)" }}
           animate={
             hasBooted
